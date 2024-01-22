@@ -61,7 +61,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
         tasksState.tasks.where((task) => !task.isCompleted).toList();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
           const SizedBox(
@@ -97,7 +97,9 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
                 child: Text(
                   '+ Agregar tarea',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.blue.shade800, fontWeight: FontWeight.bold),
+                      color: Colors.blue.shade800,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13),
                 ),
               ),
             ],
@@ -142,7 +144,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
                       const Padding(
                         padding: EdgeInsets.all(15.0),
                         child: Text(
-                          'Por favor, toca el botón de agregar tarea',
+                          'Por favor, toca el botón para agregar tarea',
                           textAlign: TextAlign.center,
                           style:
                               TextStyle(fontSize: 13, color: Color(0xFF59656F)),
@@ -173,6 +175,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
               title,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.blue.shade800,
+                    fontSize: 16,
                   ),
             ),
           ],
