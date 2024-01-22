@@ -9,9 +9,8 @@ class TasksDatasourceImpl extends TasksDataSource {
   @override
   Future<TaskEntity> createTask(TaskEntity task) async {
     try {
-      // Convertir TaskEntity a un mapa
-      Map<String, dynamic> taskMap =
-          TaskMapper.jsonToEntiy(task as Map<String, dynamic>);
+      // Convertir TaskEntity a un mapa usando entityToJson
+      Map<String, dynamic> taskMap = TaskMapper.entityToJson(task);
 
       // Añadir un nuevo documento a la colección
       await todoCollection.add(taskMap);
@@ -31,10 +30,10 @@ class TasksDatasourceImpl extends TasksDataSource {
       // Obtener documentos de la colección
       QuerySnapshot querySnapshot = await todoCollection.get();
 
-      // Mapear documentos a objetos TaskEntity
+      // Mapear documentos a objetos TaskEntity usando jsonToEntity
       List<TaskEntity> tasks = querySnapshot.docs
           .map<TaskEntity>((doc) =>
-              TaskMapper.jsonToEntiy(doc.data() as Map<String, dynamic>))
+              TaskMapper.jsonToEntity(doc.data() as Map<String, dynamic>))
           .toList();
 
       return tasks;
@@ -48,12 +47,36 @@ class TasksDatasourceImpl extends TasksDataSource {
   @override
   Future<void> deleteTask(String id) async {
     try {
-      // Eliminar el documento con el ID proporcionado de la colección
-      await todoCollection.doc(id).delete();
+      // Realizar una consulta para obtener documentos con title_task igual a 'pendejo'
+      QuerySnapshot querySnapshot =
+          await todoCollection.where('id', isEqualTo: id).get();
+
+      // Iterar sobre los documentos y eliminarlos
+      for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+        await documentSnapshot.reference.delete();
+      }
     } catch (e) {
       // Manejar errores, por ejemplo, imprimir el error
-      print("Error deleting task: $e");
+      print("Error deleting tasks: $e");
       rethrow; // Relanzar la excepción para que pueda ser manejada en la capa superior
+    }
+  }
+
+  @override
+  Future<void> updateStateTask(String id, bool isCompleted) async {
+    try {
+      // Realizar una consulta para obtener documentos con title_task igual a 'pendejo'
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await todoCollection.where('id', isEqualTo: id).get();
+
+      // Iterar sobre los documentos y actualizar 'isCompleted'
+      for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot
+          in querySnapshot.docs) {
+        await documentSnapshot.reference.update({'is_completed': isCompleted});
+      }
+    } catch (e) {
+      print("Error update tasks: $e");
+      rethrow; //
     }
   }
 }

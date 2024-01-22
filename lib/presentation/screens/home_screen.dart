@@ -93,7 +93,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
                 onPressed: () => showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
-                  builder: (context) => const CustomModalBottomSheet(),
+                  builder: (context) =>  const CustomModalBottomSheet(),
                 ),
                 child: Text(
                   '+ Agregar tarea',
@@ -110,7 +110,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
               ? Expanded(
                   child: ListView.separated(
                     separatorBuilder: (context, index) => const SizedBox(
-                      height: 15,
+                      height: 20,
                     ),
                     itemCount: tasksState.tasks.length,
                     shrinkWrap: true,
@@ -118,6 +118,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
                     itemBuilder: (context, index) {
                       final task = tasksState.tasks[index];
                       return CustomCardTasks(
+                        id: task.id,
                         title: task.title,
                         description: task.description,
                         date: task.date,

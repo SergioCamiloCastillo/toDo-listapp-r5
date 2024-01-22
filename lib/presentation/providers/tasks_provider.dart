@@ -23,6 +23,37 @@ class TasksNotifier extends StateNotifier<TasksState> {
     }
     state = state.copyWith(isLoading: false, tasks: [...state.tasks, ...tasks]);
   }
+
+  Future<void> addTask(TaskEntity task) async {
+    state = state.copyWith(isLoading: true);
+    final taskAdded = await tasksRepository.createTask(task);
+    state =
+        state.copyWith(isLoading: false, tasks: [...state.tasks, taskAdded]);
+  }
+
+  Future<void> deleteTask(String id) async {
+    state = state.copyWith(isLoading: true);
+    await tasksRepository.deleteTask(id);
+    state = state.copyWith(
+      isLoading: false,
+      tasks: state.tasks.where((task) => task.id != id).toList(),
+    );
+  }
+
+  Future<void> updateStateTask(String id, bool isCompleted) async {
+    state = state.copyWith(isLoading: true);
+    await tasksRepository.updateStateTask(id, isCompleted);
+
+    // Find the task with the specified id and update its isCompleted value
+    final updatedTasks = state.tasks.map((task) {
+      return task.id == id ? task.copyWith(isCompleted: isCompleted) : task;
+    }).toList();
+
+    state = state.copyWith(
+      isLoading: false,
+      tasks: updatedTasks,
+    );
+  }
 }
 
 class TasksState {

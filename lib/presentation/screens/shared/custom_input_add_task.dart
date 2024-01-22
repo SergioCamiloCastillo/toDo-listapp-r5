@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:todo_listapp_r5/presentation/screens/shared/custom.dart';
 
-class CustomTitleInputAddTask extends StatelessWidget {
+class CustomInputAddTask extends StatelessWidget {
   final String label;
   final String hintText;
   final int maxLines;
+  final TextEditingController controller;
 
-  const CustomTitleInputAddTask({
+  const CustomInputAddTask({
     Key? key,
     required this.label,
     required this.hintText,
     required this.maxLines,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -29,6 +31,7 @@ class CustomTitleInputAddTask extends StatelessWidget {
           label: label,
           hintText: hintText,
           maxLines: maxLines,
+          controller: controller,
         ),
       ],
     );

@@ -12,4 +12,14 @@ class TaskEntity {
     required this.date,
     required this.isCompleted,
   });
+
+  TaskEntity copyWith({String? id, String? description, bool? isCompleted}) {
+    return TaskEntity(
+      id: id ?? this.id,
+      title: title,
+      date: date,
+      description: description ?? this.description,
+      isCompleted: isCompleted ?? this.isCompleted,
+    );
+  }
 }

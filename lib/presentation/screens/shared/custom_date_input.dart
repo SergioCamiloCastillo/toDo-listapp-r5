@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CustomDateInput extends StatefulWidget {
-  const CustomDateInput({Key? key}) : super(key: key);
+  final Function(DateTime)? onDateSelected;
+
+  const CustomDateInput({Key? key, this.onDateSelected}) : super(key: key);
 
   @override
   _CustomDateInputState createState() => _CustomDateInputState();
@@ -23,6 +25,9 @@ class _CustomDateInputState extends State<CustomDateInput> {
       setState(() {
         _selectedDate = picked;
       });
+
+      // Call the callback with the selected date
+      widget.onDateSelected?.call(picked);
     }
   }
 

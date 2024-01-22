@@ -4,4 +4,5 @@ abstract class TasksDataSource {
   Future<List<TaskEntity>> getTasks();
   Future<TaskEntity> createTask(TaskEntity task);
   Future<void> deleteTask(String id);
+  Future<void> updateStateTask(String id, bool isCompleted);
 }

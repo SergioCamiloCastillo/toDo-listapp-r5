@@ -19,4 +19,9 @@ class TasksRepositoryImpl extends TasksRepository {
   Future<List<TaskEntity>> getTasks() {
     return tasksDataSource.getTasks();
   }
+
+  @override
+  Future<void> updateStateTask(String id, bool isCompleted) {
+    return tasksDataSource.updateStateTask(id, isCompleted);
+  }
 }
