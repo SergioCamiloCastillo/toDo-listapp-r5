@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo_listapp_r5/presentation/providers/providers.dart';
+import 'package:todo_listapp_r5/presentation/screens/shared/custom.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_listapp_r5/presentation/screens/shared/custom.dart';
 
-
-class CustomModalBottomSheet extends StatelessWidget {
+class CustomModalBottomSheet extends ConsumerWidget {
   const CustomModalBottomSheet({super.key});
 
+  
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.65,
       child: Padding(
@@ -52,34 +58,42 @@ class CustomModalBottomSheet extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                    child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.blue.shade800,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            8.0), // Ajusta el radio según tus preferencias
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      side: BorderSide(color: Colors.blue.shade800)),
-                  child: const Text('Cancelar'),
-                  onPressed: () {},
-                )),
+                      side: BorderSide(color: Colors.blue.shade800),
+                    ),
+                    child: const Text('Cancelar'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
                 const SizedBox(
                   width: 20,
                 ),
                 Expanded(
-                    child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade800,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            8.0), // Ajusta el radio según tus preferencias
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      side: BorderSide(color: Colors.blue.shade800)),
-                  child: const Text('Guardar'),
-                  onPressed: () {},
-                ))
+                      side: BorderSide(color: Colors.blue.shade800),
+                    ),
+                    child: const Text('Guardar'),
+                    onPressed: () {
+                      final tasknotifier = ref.read(tasksProvider.notifier);
+                      // Implementa la lógica de guardar aquí
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
               ],
             )
           ],

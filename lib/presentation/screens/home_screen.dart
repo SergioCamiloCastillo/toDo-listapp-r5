@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo_listapp_r5/presentation/providers/providers.dart';
 import 'package:todo_listapp_r5/presentation/screens/screens.dart';
+import 'package:todo_listapp_r5/presentation/screens/shared/custom_card_tasks.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey.shade200,
-        appBar: AppBar(title: const _HeaderTileAppBar()),
-        body: const _BodyCustom());
+      backgroundColor: Colors.grey.shade200,
+      appBar: AppBar(title: const _HeaderTileAppBar()),
+      body: const _BodyCustom(),
+    );
   }
 }
 
 class _HeaderTileAppBar extends StatelessWidget {
-  const _HeaderTileAppBar({
-    super.key,
-  });
+  const _HeaderTileAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +38,30 @@ class _HeaderTileAppBar extends StatelessWidget {
   }
 }
 
-class _BodyCustom extends StatelessWidget {
-  const _BodyCustom({
-    super.key,
-  });
+class _BodyCustom extends ConsumerStatefulWidget {
+  const _BodyCustom({Key? key}) : super(key: key);
+
+  @override
+  _BodyCustomState createState() => _BodyCustomState();
+}
+
+class _BodyCustomState extends ConsumerState<_BodyCustom> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Padding(
+    final tasksState = ref.watch(tasksProvider);
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
@@ -58,10 +75,10 @@ class _BodyCustom extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tareas de hoy',
+                    'Tareas',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const Text('Jueves 18 de enero')
+                  const Text('Hoy es: Jueves 18 de enero')
                 ],
               ),
               ElevatedButton(
@@ -70,24 +87,48 @@ class _BodyCustom extends StatelessWidget {
                   foregroundColor: Colors.blue.shade800,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        8.0), // Ajusta el radio según tus preferencias
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
                 onPressed: () => showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (context) => const CustomModalBottomSheet()),
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) => const CustomModalBottomSheet(),
+                ),
                 child: Text(
                   '+ Agregar tarea',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.blue.shade800, fontWeight: FontWeight.bold),
                 ),
-              )
+              ),
             ],
-          )
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          tasksState.tasks.isNotEmpty
+              ? Expanded(
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => const SizedBox(
+                      height: 15,
+                    ),
+                    itemCount: tasksState.tasks.length,
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final task = tasksState.tasks[index];
+                      return CustomCardTasks(
+                        title: task.title,
+                        description: task.description,
+                        date: task.date,
+                        isDone: task.isCompleted,
+                      );
+                    },
+                  ),
+                )
+              : const Text('No hay tareas')
         ],
       ),
-    ));
+    );
   }
 }

@@ -1,7 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class CustomDateInput extends StatelessWidget {
-  const CustomDateInput({super.key});
+class CustomDateInput extends StatefulWidget {
+  const CustomDateInput({Key? key}) : super(key: key);
+
+  @override
+  _CustomDateInputState createState() => _CustomDateInputState();
+}
+
+class _CustomDateInputState extends State<CustomDateInput> {
+  DateTime _selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,32 +39,29 @@ class CustomDateInput extends StatelessWidget {
           height: 5,
         ),
         InkWell(
-          onTap: () => showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime.now().subtract(const Duration(days: 365)),
-            lastDate: DateTime.now(),
-          ),
+          onTap: () => _selectDate(context),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(8)),
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Row(
               children: [
                 const Icon(
-                  Icons.calendar_month_outlined,
+                  Icons.calendar_today_outlined,
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Text(
-                  'dd/mm/aaaa',
+                  DateFormat('dd/MM/yyyy').format(_selectedDate),
                   style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
-                )
+                    color: Colors.grey.shade500,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
