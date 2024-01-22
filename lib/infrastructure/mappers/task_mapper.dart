@@ -21,6 +21,7 @@ class TaskMapper {
         description: '',
         date: '',
         isCompleted: false,
+        isTranslated: false,
       );
     }
 
@@ -30,6 +31,7 @@ class TaskMapper {
       description: data['description'] ?? '',
       date: data['date_task'] ?? '',
       isCompleted: data['is_completed'] ?? false,
+      isTranslated: data['is_translated'] ?? false,
     );
   }
 }

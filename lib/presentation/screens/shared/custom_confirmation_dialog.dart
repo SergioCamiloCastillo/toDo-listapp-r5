@@ -13,7 +13,7 @@ class CustomConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Confirmación'),
-      content: const Text('¿Estás seguro de que quieres realizar esta acción?'),
+      content: const Text('¿Estás seguro de que quieres eliminar esta tarea?'),
       actions: [
         TextButton(
           onPressed: onConfirm,

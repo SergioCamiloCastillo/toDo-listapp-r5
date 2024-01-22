@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_listapp_r5/config/helpers/visualization_data.dart';
 import 'package:todo_listapp_r5/domain/domain.dart';
 import 'package:todo_listapp_r5/presentation/providers/providers.dart';
 import 'package:todo_listapp_r5/presentation/screens/shared/custom.dart';
@@ -20,7 +21,7 @@ class _CustomModalBottomSheetState
   late TextEditingController titleController;
   late TextEditingController descriptionController;
   DateTime? selectedDate;
-
+  bool areFieldsValid = true;
   @override
   void initState() {
     super.initState();
@@ -30,29 +31,8 @@ class _CustomModalBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    String generateHash(String input) {
-      // Convierte la cadena de entrada a bytes
-      List<int> bytes = utf8.encode(input);
-
-      // Inicializa el valor del hash con un número aleatorio
-      int hash = Random().nextInt(1000);
-
-      // Factor de mezcla para mejorar la calidad del hash
-      const mixFactor = 31;
-
-      // Aplica la función hash sumando y mezclando los valores de los bytes
-      for (int byte in bytes) {
-        hash = (hash * mixFactor) ^ byte;
-      }
-
-      // Convierte el hash a una cadena hexadecimal
-      String hexHash = hash.toRadixString(16);
-
-      return hexHash;
-    }
-
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.65,
+      height: MediaQuery.of(context).size.height * 0.9,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
@@ -79,6 +59,14 @@ class _CustomModalBottomSheetState
               maxLines: 1,
               controller: titleController,
             ),
+            if (!areFieldsValid && titleController.text.isEmpty)
+              const Text(
+                'El título es obligatorio',
+                style: TextStyle(color: Colors.red),
+              ),
+            const SizedBox(
+              height: 15,
+            ),
             const SizedBox(
               height: 15,
             ),
@@ -87,6 +75,14 @@ class _CustomModalBottomSheetState
               hintText: 'Añade la descripción',
               maxLines: 1,
               controller: descriptionController,
+            ),
+            if (!areFieldsValid && descriptionController.text.isEmpty)
+              const Text(
+                'La descripción es obligatoria',
+                style: TextStyle(color: Colors.red),
+              ),
+            const SizedBox(
+              height: 15,
             ),
             const SizedBox(
               height: 15,
@@ -134,11 +130,20 @@ class _CustomModalBottomSheetState
                     ),
                     child: const Text('Guardar'),
                     onPressed: () async {
+                      if (titleController.text.isEmpty ||
+                          descriptionController.text.isEmpty) {
+                        setState(() {
+                          areFieldsValid = false;
+                        });
+                        return;
+                      }
                       final taskNotifier = ref.read(tasksProvider.notifier);
                       final formattedDate = DateFormat('dd/MM/yyyy')
                           .format(selectedDate ?? DateTime.now());
                       DateTime now = DateTime.now();
-
+                      setState(() {
+                        areFieldsValid = true;
+                      });
                       // Convierte la fecha y hora a una cadena formateada
                       String formattedDateTime =
                           "${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}";
@@ -151,6 +156,7 @@ class _CustomModalBottomSheetState
                         description: descriptionController.text,
                         date: formattedDate,
                         isCompleted: false,
+                        isTranslated: false,
                         // otros campos
                       );
                       await taskNotifier.addTask(task);

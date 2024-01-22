@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_listapp_r5/config/helpers/visualization_data.dart';
+import 'package:todo_listapp_r5/domain/domain.dart';
+
 import 'package:todo_listapp_r5/presentation/providers/providers.dart';
 import 'package:todo_listapp_r5/presentation/screens/screens.dart';
 import 'package:todo_listapp_r5/presentation/screens/shared/custom_card_tasks.dart';
@@ -47,20 +51,15 @@ class _BodyCustom extends ConsumerStatefulWidget {
 
 class _BodyCustomState extends ConsumerState<_BodyCustom> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final tasksState = ref.watch(tasksProvider);
+
+    // Filtrar tareas completadas y no completadas
+    final completedTasks =
+        tasksState.tasks.where((task) => task.isCompleted).toList();
+    final incompleteTasks =
+        tasksState.tasks.where((task) => !task.isCompleted).toList();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
@@ -78,7 +77,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
                     'Tareas',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const Text('Hoy es: Jueves 18 de enero')
+                  Text('Hoy es: ${capitalize(getTodayDate())}')
                 ],
               ),
               ElevatedButton(
@@ -93,7 +92,7 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
                 onPressed: () => showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
-                  builder: (context) =>  const CustomModalBottomSheet(),
+                  builder: (context) => const CustomModalBottomSheet(),
                 ),
                 child: Text(
                   '+ Agregar tarea',
@@ -108,28 +107,97 @@ class _BodyCustomState extends ConsumerState<_BodyCustom> {
           ),
           tasksState.tasks.isNotEmpty
               ? Expanded(
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) => const SizedBox(
-                      height: 20,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (incompleteTasks.isNotEmpty)
+                          _buildTaskList(context, incompleteTasks,
+                              'Tareas Pendientes', true),
+                        const SizedBox(height: 20),
+                        if (completedTasks.isNotEmpty)
+                          _buildTaskList(context, completedTasks,
+                              'Tareas Completadas', false),
+                        const SizedBox(
+                          height: 20,
+                        )
+                      ],
                     ),
-                    itemCount: tasksState.tasks.length,
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final task = tasksState.tasks[index];
-                      return CustomCardTasks(
-                        id: task.id,
-                        title: task.title,
-                        description: task.description,
-                        date: task.date,
-                        isDone: task.isCompleted,
-                      );
-                    },
                   ),
                 )
-              : const Text('No hay tareas')
+              : Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/box-empty.png',
+                        width: 200,
+                        height: 200,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text('¡Sin tareas!',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      const Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: Text(
+                          'Por favor, toca el botón de agregar tarea',
+                          textAlign: TextAlign.center,
+                          style:
+                              TextStyle(fontSize: 13, color: Color(0xFF59656F)),
+                        ),
+                      )
+                    ],
+                  ),
+                )
         ],
       ),
+    );
+  }
+
+  Widget _buildTaskList(BuildContext context, List<TaskEntity> tasks,
+      String title, bool arePending) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(arePending ? Icons.pending_actions : Icons.task_alt,
+                color: Colors.blue.shade800),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.blue.shade800,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        ListView.separated(
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 20,
+          ),
+          itemCount: tasks.length,
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+            return CustomCardTasks(
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              date: task.date,
+              isDone: task.isCompleted,
+              isTranslated: task.isTranslated,
+            );
+          },
+        ),
+      ],
     );
   }
 }

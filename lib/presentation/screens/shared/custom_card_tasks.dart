@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:gtext/gtext.dart';
+import 'package:todo_listapp_r5/config/helpers/visualization_data.dart';
 import 'package:todo_listapp_r5/presentation/providers/providers.dart';
 import 'package:todo_listapp_r5/presentation/screens/shared/custom.dart';
 
@@ -10,26 +11,20 @@ class CustomCardTasks extends ConsumerWidget {
   final String description;
   final String date;
   final bool isDone;
+  final bool isTranslated;
   const CustomCardTasks(
       {Key? key,
       required this.id,
       required this.title,
       required this.description,
       required this.date,
-      required this.isDone})
+      required this.isDone,
+      required this.isTranslated})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String convertToFormattedDate(String date) {
-      // Parse the input string to a DateTime object using a custom date format
-      DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(date);
-
-      // Format the DateTime object to the desired format
-      String formattedDate = DateFormat('dd/MM/yyyy').format(parsedDate);
-
-      return formattedDate;
-    }
+   
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,18 +60,33 @@ class CustomCardTasks extends ConsumerWidget {
                           child: ListTile(
                             contentPadding: const EdgeInsets.only(
                                 left: 0), // Ajusta el padding izquierdo
-                            title: Text(
-                              title,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                              description,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                            ),
+                            title: isTranslated
+                                ? GText(
+                                    capitalize(title),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                : Text(
+                                    capitalize(title),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                            subtitle: isTranslated
+                                ? GText(
+                                    capitalize(description),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                    toLang: 'en',
+                                  )
+                                : Text(
+                                    capitalize(description),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                  ),
                             trailing: Transform.scale(
                               scale: 1.5,
                               child: Checkbox(
@@ -107,7 +117,9 @@ class CustomCardTasks extends ConsumerWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      const Text('Fecha: '),
+                                      isTranslated
+                                          ? const GText('Fecha: ')
+                                          : const Text('Fecha: '),
                                       const SizedBox(width: 10),
                                       Text(
                                         convertToFormattedDate(date),
@@ -156,10 +168,25 @@ class CustomCardTasks extends ConsumerWidget {
           children: [
             Icon(Icons.translate, color: Colors.blue.shade500),
             const SizedBox(width: 10),
-            Text('Traducir tarea',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    color: Colors.blue.shade500, fontWeight: FontWeight.bold))
+            GestureDetector(
+              onTap: () {
+                // Obtén la tarea actual
+                final currentTask = ref
+                    .read(tasksProvider)
+                    .tasks
+                    .firstWhere((task) => task.id == id);
+
+                // Cambiar el estado de "translate" aquí
+                ref
+                    .read(tasksProvider.notifier)
+                    .updateStateTranslate(id, !currentTask.isTranslated);
+              },
+              child: Text(isTranslated ? 'Dejar de traducir' : 'Traducir tarea',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Colors.blue.shade500,
+                      fontWeight: FontWeight.bold)),
+            )
           ],
         ),
       ],

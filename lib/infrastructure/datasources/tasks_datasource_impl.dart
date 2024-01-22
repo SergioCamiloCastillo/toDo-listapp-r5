@@ -36,6 +36,8 @@ class TasksDatasourceImpl extends TasksDataSource {
               TaskMapper.jsonToEntity(doc.data() as Map<String, dynamic>))
           .toList();
 
+      tasks.sort((a, b) => b.date.compareTo(a.date));
+
       return tasks;
     } catch (e) {
       // Manejar errores, por ejemplo, imprimir el error

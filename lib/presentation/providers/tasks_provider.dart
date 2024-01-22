@@ -54,7 +54,23 @@ class TasksNotifier extends StateNotifier<TasksState> {
       tasks: updatedTasks,
     );
   }
+  Future<void> updateStateTranslate(String id, bool isTranslated) async {
+    state = state.copyWith(isLoading: true);
+
+    // Find the task with the specified id and update its isTranslated value
+    final updatedTasks = state.tasks.map((task) {
+      return task.id == id ? task.copyWith(isTranslated: isTranslated) : task;
+    }).toList();
+
+    state = state.copyWith(
+      isLoading: false,
+      tasks: updatedTasks,
+    );
+  }
+ 
 }
+
+
 
 class TasksState {
   final bool isLoading;
