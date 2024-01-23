@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:todo_listapp_r5/config/constants/environment.dart';
 import 'package:todo_listapp_r5/domain/domain.dart';
 import 'package:todo_listapp_r5/infrastructure/mappers/task_mapper.dart';
 
 class TasksDatasourceImpl extends TasksDataSource {
-  final todoCollection =
-      FirebaseFirestore.instance.collection('todoAppFlutterR5');
+  final todoCollection = FirebaseFirestore.instance
+      .collection(Environment.nameCollectionFireStore);
 
   @override
   Future<TaskEntity> createTask(TaskEntity task) async {
